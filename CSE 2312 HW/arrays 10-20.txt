@@ -1,0 +1,45 @@
+
+
+// void scaleU‌32(uint32_t y[], const uint32_t x[], uint32_t scale, uint32_t count)
+// address of y[0] is in R0, address of x[0] in R1, scale is in R2, count in R3 (for how many elements are in the array) 
+//pass in array x, scale it by scale and return array y
+scaleU32:
+    PUSH {R4}           // save R4 on stack
+    CMP R3, #0          // cmp to see if the amount of elements in the array is 0?
+scale_loop:
+    BEQ scale_end       // if count is 0, bail and exit the loop
+    LDR R4, [R1], #4    // Put the address of array x which is in R1 into R4 and R1 becomes the index and increment the index 
+                        //R4 = *(R1), R1 += sizeof(uint32_t) -> R4 = *(x++)
+
+    MUL R4, R4, R2      // multiply the current element of the array by the scale and put that in R4 (R4 = R4*scale)
+    STR R4, [R0], #4    // Store the element currently R4 into the output array and increment 
+                        // *(R0) = R4, R0 += sizeof(uint32_t) -> *(y++) = R4
+
+    SUBS R3, R3, #1     // decrement the count (count--, update zero flag)
+    B scale_loop        // get next value in array
+scale_end:
+    POP {R4}            // restore R4 from stack
+    BX LR
+
+
+
+
+// uint32_t dotpU32(const uint32_t x[], const uint32_t y[], uint32_t count)
+// address of x[0] in R0, address of y[0] in R1, count in R3 (for how many elements are in arrays x & y)
+// Pass arrays in x[] and y[], return dot product which is summation = {i = 0... count-1} x[i] * y[i]
+dotpU32:
+    PUSH {R4, R5}       
+    MOV R3, R0           // move the address of the first array into r4 (R3 = &x[0])
+    MOV R0, #0           // move 0 into R0 bc it holds the product of the arrays (product = 0)
+    CMP R2, #0           // are both array empty? (set ZF=1 if count == 0)
+dotp_loop:
+    BEQ dotp_end         // exit loop if count is 0/ if the arrays are empty
+    LDR R4, [R3], #4     // put the first element of the x array into r4 (R4 = *(R3), R3 += sizeof(uint32_t) -> R4 = *(x++)
+    LDR R5, [R1], #4     // put the first element of the y array into r5 (R5 = *(R1), R1 += sizeof(uint32_t) -> R5 = *(y++)
+    MLA R0, R4, R5, R0   // multiply the values in r4 and r5 and add them to the previously multiplied values and place in R0 (R0 = R4 * R5 + R0)
+    SUBS R2, R2, #1      // decrement counter (count--, update zero flag)
+    B dotp_loop          // get next value
+dotp_end:
+    POP {R4, R5}
+    BX LR
+

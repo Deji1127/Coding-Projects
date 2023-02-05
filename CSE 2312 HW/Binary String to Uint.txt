@@ -1,0 +1,18 @@
+.global BinarytoUint32
+.text
+
+Uint32_t binaryToUint32(const char str[])
+//takes a binary string and returns an unsigned 32 bit int
+BinaryToUint32:
+	MOV R1, R0
+	MOV R0, #0
+BTU_LOOP:
+	LDRSB R2, [R1], #1
+	CMP R2, #0
+	BEQ BTU_END
+	CMP R2, #'1'
+	MOV RO, RO, LSL #1
+	ORREQ R0, R0, #1
+	B BTU_LOOP
+BTU_END:
+	BX LR

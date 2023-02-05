@@ -1,0 +1,13 @@
+bl to a function
+bx (in direct) lr to return to a function
+
+branch allows for the use of loops 
+
+ASCII
+
+'0'   30Hex
+'9'   39Hex
+'A'   41Hex
+'B'   42Hex
+'a'   61Hex
+'b'   62Hex

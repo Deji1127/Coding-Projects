@@ -1,0 +1,37 @@
+.global RightString
+.text
+void rightStringTrunc(char* strOut, const char* strIn, uint32_t length)
+
+// input: array (strIn) containing the input string, and the number of characters to extract (length)
+
+// output: array (strOut) containing up to, but not exceeding length number of strIn characters from the end of the array
+
+// strIn = ‘abcdef’, length = 5 → returns strOut = ‘bcdef’
+
+// strIn = ‘abcdef’, length = 7 → returns strOut = ‘abcdef’
+RightString:
+	PUSH{R4}
+	MOV R4, #0
+	CMP R2, #0
+	BEQ End_RightString
+Find_RightString_length:
+	LDRSB R3, [R1], #1
+	CMP R3, #0
+	ADDNE R4, R4, #1
+	BNE Find_RightString_length
+	CMP R4, R2
+	BMI Right_AllString
+	SUB R1, R1, R2
+	SUB R1, R1, #1
+	B copy_Right_String
+Right_AllString:
+	SUB R1, R1, #1
+	SUB R1, R1, R4
+copy_Right_String:
+	LDRSB R3, [R1], #1
+	STRB R3, [R0], #1
+	SUBS R2, R2, #1
+	BNE copy_Right_String
+End_RightString:
+	POP{R4}
+	BX LR

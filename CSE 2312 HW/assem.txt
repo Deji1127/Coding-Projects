@@ -1,0 +1,197 @@
+class code
+uint32_t strlength(const char str[])
+{
+	int i = 0;//variable used to calculate the length
+	while(str[i]!= '\0'0)//while string at index i doesnt not equal null
+	{
+		i++;
+	}
+	return i;
+}
+int main(void)
+{
+	char str[] = "Hello";
+	uint32_t length = strlength(str);
+	printf("str = %s\n", str);
+	printf("len = %u\n", length);
+
+	return 0;
+}
+
+
+//uint32_t strlength(const char str[])
+//add of str[0] in r0 and returns length in r0
+strlength:
+	mov r1 r0//move the pointer into r1
+	mov ro, #0//contains the counter
+sl_loop:
+	ldrsb r2, [r1] //r2 gets the value that's stored at the location string
+	add r1, r1, #1 //uses pointer arithmetic to move to next index
+	cmp r2, #0 //is r2 null?
+	beq sl_end //if the answer is yes, jump to end of prog and exit loop
+	add r0, r0, #1 //if it wasnt, we add to 1 r0 which increments the length and goes back to loop
+	b sl_loop //get next character
+
+
+
+
+//uint32_t strlength(const char str[])
+//add of str[0] in r0 and returns length in r0
+strlength:
+	mov r1 r0//move the pointer/address into r1
+	mov ro, #0//contains the index counter
+sl_loop:
+	ldrsb r2, [r1,ro] //load r2 with a value of a sign byte that's located at r1+r0 base (address+index)
+	cmp r2, #0 //is r2 null?
+	beq sl_end //if the answer is yes, jump to end of prog and exit loop
+	add r0, r0, #1 //if it wasnt, we add to 1 r0 which increments the length and goes back to loop
+	b sl_loop //gets next character
+sl_end:
+	bx lr
+
+prints out:
+str = Hello
+len = 5
+ 
+immunibility- whether or not a variable changes or not
+uint32_t strlength(const char str[])//a constant char that is unchangeable
+{
+	int i = 0;
+	str[0] = '*';//c prevents this bc str is immunible/cant be changed
+	char* p = (char*) &str[0];//breaks immunibility
+	*p = '*';
+	while(str[i]!= '\0'0)
+	{
+		i++;
+	}
+	return i;
+}
+prints out:
+str = *ello
+len = 5
+
+
+
+//returns position of first instance of a char c in a string or -1 if not found
+//extern int32_t strFind(const str[], char c)
+StrFind:
+	mov r2, r0//move the pointer into r2, zero out R0
+	move ro, #0//index
+sf_loop
+	ldrsb r3, [r2,r0]//r2 is the address in memory + r0 is counter...str[index]
+	cmp r3, #0// is r3 null or is str[index] null?
+	beq sf_error//if it is, then there jump to error bc we didnt find a matching character
+	cmp r3, r1//if not, compare r3, r1 (character to find with index) 
+	beq sf_end//if the character is the same, jump to end
+	add r0,r0, #1 //if not, increment index
+	b sf_loop//get next character
+sf_error:
+	mov r0, #-1//set return to - (char not found)
+sf_end:
+	bx lr
+
+
+//extern int32_t strFindN(const char str[], char c, uint32_t n)
+//finds the nth instance at which a certain char c occurs
+StrFindN:
+	PUSH {R4}//push r4 on the stack
+	mov r3, r0//r3 is string char
+	mov r0, #0//zero out the index (aka r0 is counter)
+sfn_loop
+	ldrsb r4, [r3,0]//r2 is the address in memory + r0 is counter...str[index]
+	cmp r3, #0// is r4 null or is str[index] null?
+	beq sf_error//if it is, then there jump to error bc we didnt find a matching character
+	cmp r4, r1//if not equal, compare r4, r1 (character to find with index) 
+	bne sfn_next//if not equal, go to next index
+	subs r2, r2, #1//if yes, substract the counter by 1
+	beq sfn_end//if instance = 0, return with current index
+sfn_next:
+	add r0, r0, #1 //go to next index
+	b sfn_loop
+sfn_error:
+	mov r0, #-1//set return to - (char not found)
+sfn_end:
+	POP {R4}
+	bx lr
+
+
+//extern void strCat(char strTo[], const char strFrom[])
+//concatenates strFrom to the end of strTo
+strCat:
+	lsrsb r2, [r0], #1 //load into r2 a char locatd at r0 and increment r0 (index) by 1. now r2 has the char at the index of r0
+	cmp r2, #0 // is the char null?
+	bne strCat //if it's not, get next char
+	sub r0, r0, #1 //back up to null bc u went too far
+strCat_loop:
+	ldrsb r2, [r1], #1 //load into r2 a char from r1 and increment r0 (the index) by 1
+	cmp r2, #0//is null?
+	beq strCat_end //bail and end the prog
+	b strCat_loop //if not, restart loop and get next char
+strCat_end:
+	bx lr
+
+//extern void strMid(char strTo[], const char strFrom[], uint32_t ofs)
+//returns a subsring starting at offset(first index of substring) with max length
+
+strMid:
+	PUSH {R4}
+strMid_loop: //finds the point where u start copying from
+	cmp r2, #0 // check if the offset you're looking for is 0
+	beq strMid_loop2 //if it is, go to copy loop
+	ldrsb r4, [r1], #1 //if not, get the char from r1 and place in r4 and increment counter
+	cmp r4, #0 //is this char null?
+	beq strMid_end //if it is, then the index is beyond the end of string so jump to end
+	sub r2, r2, #1 //if not, decrement the offset
+	b strMid_loop1 //get the next character	
+
+strMid_loop2: //copy substring 
+	cmp r3, #0 //check if the length is 0?
+	beq strMid_end//if it is, then jump to end bc there is nothing to copy
+	ldrsb r4, [r1], #1//read the next character in index of r1 into r4 and increment r1
+	cmp r4, #0//is the character you read null?
+	beq strMid_end//if it is then jump to the end bc there's nothing to read
+	strb r4, [r0], #1 //if not, store the char that is in r4 into r0
+	sub r3, r3, #1 //decrement length
+	b strMid_loop2//get next char and begin loop again
+
+strMid_end:
+	mov r4, #0 //add null to the end of strTo
+	strb r4, [r4] 
+	POP {R4}
+	bxlr
+
+
+
+//void unint32ToBinary (char str[], uint32_t x)
+//take a 32 bit number and return it in binary
+uint32toBinary:
+	mov r2, #0x80000000 //mask with bit 31 set
+utb_loop:
+	tst r1, r2 //test r1 and r2 but anding them together
+	movne r3, #'1'//if we test it and it's not 0, put #1 into r3
+	moveeq r3, #'0'/if we test it and it's 0, put #0 into r3
+
+	strb r3, [r0], #1 //store ascii char in string and increment r0 by sizeof the char
+	movs r2, r2, lsr #1//move the mask bit to right
+	bne utb_loop //loop back for rest of 31 bits
+	mov r3, #0 //add null to r3 at the end of string
+	strb r3, [r0] 
+	bxlr
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
