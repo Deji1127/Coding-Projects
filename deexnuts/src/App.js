@@ -3,7 +3,7 @@ import Info from "./Info.js";
 function App() {
   return (
     <div className="App">
-      <Info/>
+      <Info title="This is the title"/>
       <AddItem text="Ahmed" number={7}/>
       <AddItem text="Saja"/>
     </div>
