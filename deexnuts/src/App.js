@@ -1,13 +1,13 @@
 import "./App.css";
-import SearchBar from "./SearchBar";
+// import SearchBar from "./SearchBar";
 //import Info from "./Info.js";
 //import { useState } from "react";
-
+import Password from "./Password"
 
 function App() {
   return (
     <div className="App">
-    <SearchBar />
+    {/* <SearchBar /> */}
     </div>
   )
 }
