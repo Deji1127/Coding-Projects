@@ -1,0 +1,41 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+body {
+  background-color: lightgray;
+}
+.margin-width{
+    width: 25%;
+}
+.green-border {
+  color: green;
+  border-color: green;
+  border-width: 5px;
+  border-style: solid;
+  font-family: Lobster, cursive;
+  border-radius: 10px;
+}
+ul {
+  color: purple;
+  font-size: 10px;
+  font-family: "Courier New", Courier, monospace;
+}
+ol {
+  color: blue;
+  font-size: 10px;
+  font-family: monospace;
+}
+.custom-rounded-border {
+    border: 2px dashed black;
+}
+.box-1{
+    border: 5px red solid;
+    background-color: blueviolet;
+    padding-top: 20px; 
+    margin-top: 20px;
+}
+.categories ul{
+    border: 1px grey solid;
+    text-align: center;
+}
